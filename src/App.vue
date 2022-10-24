@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 import Foo from './foo.vue'
 import Bar from './bar.vue'
 
@@ -10,6 +10,18 @@ const toggle = () => {
   a.value = !a.value
   count.value += 1
 }
+const toggles = async () => {
+  for (let i = 50; i > 0; i--) {
+    toggle()
+    await nextTick()
+    await new Promise(resolve => setTimeout(resolve, 100))
+  }
+}
+
+onMounted(() => {
+  // ensure both components get initialized once
+  toggle()
+})
 </script>
 
 <template>
@@ -18,6 +30,9 @@ const toggle = () => {
       <h1>Count {{ count }}</h1>
       <button @click="toggle()">
         Toggle
+      </button>
+      <button @click="toggles()">
+        Toggle 50x
       </button>
       <div>Open the memory tab in DevTools, take a memory snapshot. Click `toggle` for a few times, take another snapshot and see the diff. You may search for the instance amount of `EffectScope` for easier comparsion.</div>
     </div>
