@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref } from 'vue'
-import Foo from './foo.vue'
-import Bar from './bar.vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const a = ref(false)
 const count = ref(0)
 
 const toggle = () => {
   a.value = !a.value
+  router.push(a.value ? '/foo' : '/bar')
   count.value += 1
 }
 const toggles = async () => {
@@ -36,13 +37,15 @@ onMounted(() => {
       </button>
       <div>Open the memory tab in DevTools, take a memory snapshot. Click `toggle` for a few times, take another snapshot and see the diff. You may search for the instance amount of `EffectScope` for easier comparsion.</div>
     </div>
-    <Transition mode="out-in">
-      <Suspense>
-        <Component :is="a ? Foo : Bar" />
-        <template #fallback>
-          Loading...
-        </template>
-      </Suspense>
-    </Transition>
+    <RouterView v-slot="{ Component }">
+      <Transition mode="out-in">
+        <Suspense>
+          <Component :is="Component" />
+          <template #fallback>
+            Loading...
+          </template>
+        </Suspense>
+      </Transition>
+    </RouterView>
   </main>
 </template>
